@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-do list</title>
+</head>
+<body>
+    <h1>To-do list</h1>
+    <input type="text" id="taskInput" placeholder="Enter a new task">
+    <button onclick="addTask()">Add</button>
+    <ul id="taskList"></ul>
+    <script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    displayTasks();
+      function addTask() {
+      let taskInput = document.getElementById("taskInput");
+      let task = taskInput.value.trim();
+      if(task) {
+        tasks.push(task);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        taskInput.value = "";
+        displayTasks();
+      } else {
+        alert("Please enter a task!");
+      }
+    }
+     function displayTasks() {
+      let taskList = document.getElementById("taskList");
+      taskList.innerHTML = "";
+      tasks.forEach((task, index) => {
+        let li = document.createElement("li");
+        li.innerHTML = `
+          <span>${task}</span>
+          <button class="delete-btn" onclick="deleteTask(${index})">حذف</button>
+        `;
+        taskList.appendChild(li);
+      });
+    }
+     function deleteTask(index) {
+      tasks.splice(index, 1);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      displayTasks();
+    }
+    </script>
+
+</body>
+</html>
