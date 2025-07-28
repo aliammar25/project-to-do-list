@@ -69,15 +69,27 @@
     <input type="text" id="taskInput" placeholder="Enter a new task">
     <button onclick="addTask()">Add</button>
     <ul id="taskList"></ul>
-   <script>
+    <script>
   let currentStorage = "local";
   let tasks = [];
 
-  loadTasks();
-
   
+  window.onload = function() {
+    const savedStorage = localStorage.getItem("selectedStorage");
+    if(savedStorage) {
+      currentStorage = savedStorage;
+      document.getElementById("storageType").value = savedStorage;
+    }
+    const savedInput = localStorage.getItem("taskInputValue");
+    if(savedInput !== null) {
+      document.getElementById("taskInput").value = savedInput;
+    }
+    loadTasks();
+  }
+
   function switchStorage() {
     currentStorage = document.getElementById("storageType").value;
+    localStorage.setItem("selectedStorage", currentStorage); // نحفظ الاختيار
     loadTasks();
   }
 
@@ -97,6 +109,7 @@
       tasks.push(task);
       saveTasks();
       input.value = "";
+      localStorage.setItem("taskInputValue", ""); // نمسح قيمة input من التخزين
       displayTasks();
     } else {
       alert("Please enter a task");
@@ -111,7 +124,6 @@
     }
   }
 
- 
   function displayTasks() {
     let list = document.getElementById("taskList");
     list.innerHTML = "";
@@ -125,12 +137,14 @@
     });
   }
 
-
   function deleteTask(index) {
     tasks.splice(index, 1);
     saveTasks();
     displayTasks();
   }
+  document.getElementById("taskInput").addEventListener("input", function() {
+    localStorage.setItem("taskInputValue", this.value);
+  });
 </script>
 
 </body>
