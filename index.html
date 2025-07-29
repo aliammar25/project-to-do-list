@@ -70,6 +70,7 @@
     <button onclick="addTask()">Add</button>
     <ul id="taskList"></ul>
     <script>
+     sessionStorage.clear();
   let currentStorage = "local";
   let tasks = [];
 
@@ -89,7 +90,7 @@
 
   function switchStorage() {
     currentStorage = document.getElementById("storageType").value;
-    localStorage.setItem("selectedStorage", currentStorage); // نحفظ الاختيار
+    localStorage.setItem("selectedStorage", currentStorage); 
     loadTasks();
   }
 
@@ -109,7 +110,7 @@
       tasks.push(task);
       saveTasks();
       input.value = "";
-      localStorage.setItem("taskInputValue", ""); // نمسح قيمة input من التخزين
+      localStorage.setItem("taskInputValue", "");
       displayTasks();
     } else {
       alert("Please enter a task");
@@ -131,7 +132,7 @@
       let li = document.createElement("li");
       li.innerHTML = `
         <span>${task}</span>
-        <button class="delete-btn" onclick="deleteTask(${index})">حذف</button>
+        <button class="delete-btn" onclick="deleteTask(${index})"> Delete</button>
       `;
       list.appendChild(li);
     });
