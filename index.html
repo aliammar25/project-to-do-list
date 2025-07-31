@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-do list</title>
+    <title>Document</title>
     <style>
    body {
     font-family: Arial, sans-serif;
@@ -55,98 +55,127 @@
     
   }
 </style>
+
 </head>
 <body>
     <h1>To-do list</h1>
-
-    <label>Choose the storage type:</label>
 
      <select id="storageType" onchange="switchStorage()">
        <option value="local">  localStorage</option>
       <option value="session">sessionStorage</option>
     </select>
+    <label> Choose the storage type  </label>
+
     <br>
-    <input type="text" id="taskInput" placeholder="Enter a new task">
     <button onclick="addTask()">Add</button>
+    <input type="text" id="taskInput" placeholder="Enter a new task">
+    <br>
     <ul id="taskList"></ul>
-    <script>
-     sessionStorage.clear();
-  let currentStorage = "local";
-  let tasks = [];
+  <script>
+    let currentStorage = "local";
 
-  
-  window.onload = function() {
-    const savedStorage = localStorage.getItem("selectedStorage");
-    if(savedStorage) {
-      currentStorage = savedStorage;
-      document.getElementById("storageType").value = savedStorage;
-    }
-    const savedInput = localStorage.getItem("taskInputValue");
-    if(savedInput !== null) {
-      document.getElementById("taskInput").value = savedInput;
-    }
-    loadTasks();
+window.onload = function() {
+  const savedStorage = localStorage.getItem ("selectedStorage");
+  if(savedStorage) {
+    currentStorage = savedStorage;
+    document.getElementById ("storageType").value = savedStorage;
   }
 
-  function switchStorage() {
-    currentStorage = document.getElementById("storageType").value;
-    localStorage.setItem("selectedStorage", currentStorage); 
-    loadTasks();
+  const savedInput = localStorage.getItem ("taskInputValue");
+  if(savedInput !== null) {
+    document.getElementById ("taskInput").value = savedInput;
   }
 
-  function loadTasks() {
+  loadTasks();
+}
+
+function switchStorage() {
+  currentStorage = document.getElementById ("storageType").value;
+  localStorage.setItem ("selectedStorage", currentStorage);
+  loadTasks();
+}
+
+function loadTasks() {
+  let tasks;
+  if (currentStorage === "local") {
+    tasks = JSON.parse (localStorage.getItem("tasks")) || [];
+  } else {
+    tasks = JSON.parse (sessionStorage.getItem("tasks")) || [];
+  }
+  displayTasks (tasks);
+}
+
+function addTask() {
+  let input = document.getElementById ("taskInput");
+  let task = input.value.trim ();
+
+  if(task) {
+    let tasks;
     if (currentStorage === "local") {
-      tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    } else {
-      tasks = JSON.parse(sessionStorage.getItem("tasks")) || [];
-    }
-    displayTasks();
-  }
-
-  function addTask() {
-    let input = document.getElementById("taskInput");
-    let task = input.value.trim();
-    if(task) {
-      tasks.push(task);
-      saveTasks();
-      input.value = "";
-      localStorage.setItem("taskInputValue", "");
-      displayTasks();
-    } else {
-      alert("Please enter a task");
-    }
-  }
-
-  function saveTasks() {
-    if (currentStorage === "local") {
+      tasks = JSON.parse (localStorage.getItem("tasks")) || [];
+      tasks.push (task);
       localStorage.setItem("tasks", JSON.stringify(tasks));
     } else {
-      sessionStorage.setItem("tasks", JSON.stringify(tasks));
+      tasks = JSON.parse (sessionStorage.getItem("tasks")) || [];
+      tasks.push (task);
+      sessionStorage.setItem ("tasks", JSON.stringify(tasks));
     }
+    input.value = "";
+    localStorage.setItem ("taskInputValue", "");
+    displayTasks (tasks);
+  } else {
+    alert ("Please write an assignment");
   }
+}
 
-  function displayTasks() {
-    let list = document.getElementById("taskList");
-    list.innerHTML = "";
-    tasks.forEach((task, index) => {
-      let li = document.createElement("li");
-      li.innerHTML = `
-        <span>${task}</span>
-        <button class="delete-btn" onclick="deleteTask(${index})"> Delete</button>
-      `;
-      list.appendChild(li);
-    });
-  }
-
-  function deleteTask(index) {
-    tasks.splice(index, 1);
-    saveTasks();
-    displayTasks();
-  }
-  document.getElementById("taskInput").addEventListener("input", function() {
-    localStorage.setItem("taskInputValue", this.value);
+function displayTasks (tasks) {
+  let list = document.getElementById ("taskList");
+  list.innerHTML = "";
+  tasks.forEach ((task, index) => {
+    let li = document.createElement ("li");
+    li.innerHTML = `
+      <button class="delete-btn" onclick="deleteTask (${index})">Delete</button>
+      <span>${task}</span>
+    `;
+    list.appendChild(li);
   });
-</script>
+}
 
+function deleteTask (index) {
+  let tasks;
+  if (currentStorage === "local") {
+    tasks = JSON.parse (localStorage.getItem("tasks")) || [];
+    tasks.splice (index, 1);
+    localStorage.setItem ("tasks", JSON.stringify(tasks));
+  } else {
+    tasks = JSON.parse (sessionStorage.getItem("tasks")) || [];
+    tasks.splice (index, 1);
+    sessionStorage.setItem ("tasks", JSON.stringify(tasks));
+  }
+  displayTasks(tasks);
+}
+
+
+// حفظ قيمة ال input مع كل كتابة
+document.getElementById ( "taskInput").addEventListener("input", function() {
+  localStorage.setItem ( "taskInputValue", this.value);
+});
+// عند تحميل الصفحة نمسح sessionStorage بالكامل
+window.onload = function() {
+  sessionStorage.clear ();
+
+  // باقي الكود لتحميل البيانات لو موجودة
+  const savedStorage = localStorage.getItem ("selectedStorage");
+  if(savedStorage) {
+    currentStorage = savedStorage;
+    document.getElementById ("storageType").value = savedStorage;
+  }
+  const savedInput = localStorage.getItem ("taskInputValue");
+  if(savedInput !== null) {
+    document.getElementById("taskInput").value = savedInput;
+  }
+  loadTasks();
+}
+</script>
 </body>
 </html>
